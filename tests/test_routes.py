@@ -191,20 +191,37 @@ class TestProductRoutes(TestCase):
         response = self.client.get(f"{BASE_URL}/999999")
         self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
 
-    def test_update_product(self):
-        """It should Update a Product."""
-        product = self._create_products(1)[0]
-        data = product.serialize()
-        data["description"] = "Updated by route test"
-        response = self.client.put(f"{BASE_URL}/{product.id}", json=data)
-        self.assertEqual(response.status_code, status.HTTP_200_OK)
-        self.assertEqual(response.get_json()["description"], data["description"])
+    def test_update_a_product(self):
+        """It should create a Product with POST and update it with PUT."""
+        product = ProductFactory()
+        create_response = self.client.post(BASE_URL, json=product.serialize())
+        self.assertEqual(create_response.status_code, status.HTTP_201_CREATED)
+        created_product = create_response.get_json()
+        product_id = created_product["id"]
 
-    def test_delete_product(self):
-        """It should Delete a Product."""
+        update_data = product.serialize()
+        update_data["description"] = "Updated product description"
+        response = self.client.put(f"{BASE_URL}/{product_id}", json=update_data)
+
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        data = response.get_json()
+        self.assertEqual(data["id"], product_id)
+        self.assertEqual(data["description"], "Updated product description")
+
+    def test_delete_a_product(self):
+        """It should Delete a Product and reduce the product count by one."""
         product = self._create_products(1)[0]
-        response = self.client.delete(f"{BASE_URL}/{product.id}")
+        count_before = self.get_product_count()
+
+        response = self.client.delete(
+            f"{BASE_URL}/{product.id}",
+            content_type="application/json"
+        )
+
         self.assertEqual(response.status_code, status.HTTP_204_NO_CONTENT)
+        self.assertEqual(response.data, b"")
+        self.assertEqual(self.get_product_count(), count_before - 1)
+
         response = self.client.get(f"{BASE_URL}/{product.id}")
         self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
 
