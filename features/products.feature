@@ -42,7 +42,8 @@ Scenario: Create a Product
 Scenario: Read a Product
     When I visit the "Home Page"
     And I press the "Clear" button
-    And I set the "Id" to "1"
+    And I set the "Name" to "Hat"
+    And I press the "Search" button
     And I press the "Retrieve" button
     Then I should see the message "Success"
     And I should see "Hat" in the "Name" field
@@ -50,7 +51,8 @@ Scenario: Read a Product
 Scenario: Update a Product
     When I visit the "Home Page"
     And I press the "Clear" button
-    And I set the "Id" to "1"
+    And I set the "Name" to "Hat"
+    And I press the "Search" button
     And I press the "Retrieve" button
     And I change "Description" to "Updated product description"
     And I press the "Update" button
@@ -60,7 +62,8 @@ Scenario: Update a Product
 Scenario: Delete a Product
     When I visit the "Home Page"
     And I press the "Clear" button
-    And I set the "Id" to "1"
+    And I set the "Name" to "Hat"
+    And I press the "Search" button
     And I press the "Delete" button
     Then I should see the message "Product has been Deleted!"
 
