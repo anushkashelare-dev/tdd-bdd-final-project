@@ -38,3 +38,56 @@ Scenario: Create a Product
     And I should see "True" in the "Available" dropdown
     And I should see "Tools" in the "Category" dropdown
     And I should see "34.95" in the "Price" field
+
+Scenario: Read a Product
+    When I visit the "Home Page"
+    And I press the "Clear" button
+    And I set the "Id" to "1"
+    And I press the "Retrieve" button
+    Then I should see the message "Success"
+    And I should see "Hat" in the "Name" field
+
+Scenario: Update a Product
+    When I visit the "Home Page"
+    And I press the "Clear" button
+    And I set the "Id" to "1"
+    And I press the "Retrieve" button
+    And I change "Description" to "Updated product description"
+    And I press the "Update" button
+    Then I should see the message "Success"
+    And I should see "Updated product description" in the "Description" field
+
+Scenario: Delete a Product
+    When I visit the "Home Page"
+    And I press the "Clear" button
+    And I set the "Id" to "1"
+    And I press the "Delete" button
+    Then I should see the message "Product has been Deleted!"
+
+Scenario: List All Products
+    When I visit the "Home Page"
+    And I press the "Clear" button
+    And I press the "Search" button
+    Then I should see the message "Success"
+
+Scenario: Search Products by Name
+    When I visit the "Home Page"
+    And I press the "Clear" button
+    And I set the "Name" to "Hat"
+    And I press the "Search" button
+    Then I should see the message "Success"
+    And I should see "Hat" in the "Name" field
+
+Scenario: Search Products by Category
+    When I visit the "Home Page"
+    And I press the "Clear" button
+    And I select "Cloths" in the "Category" dropdown
+    And I press the "Search" button
+    Then I should see the message "Success"
+
+Scenario: Search Products by Availability
+    When I visit the "Home Page"
+    And I press the "Clear" button
+    And I select "True" in the "Available" dropdown
+    And I press the "Search" button
+    Then I should see the message "Success"
