@@ -104,3 +104,57 @@ class TestProductModel(unittest.TestCase):
     #
     # ADD YOUR TEST CASES HERE
     #
+
+    def test_read_a_product(self):
+        """It should Read a Product by id."""
+        product = ProductFactory()
+        product.create()
+        found = Product.find(product.id)
+        self.assertIsNotNone(found)
+        self.assertEqual(found.name, product.name)
+
+    def test_update_a_product(self):
+        """It should Update an existing Product."""
+        product = ProductFactory()
+        product.create()
+        product.description = "Updated description"
+        product.update()
+        found = Product.find(product.id)
+        self.assertEqual(found.description, "Updated description")
+
+    def test_delete_a_product(self):
+        """It should Delete a Product."""
+        product = ProductFactory()
+        product.create()
+        product_id = product.id
+        product.delete()
+        self.assertIsNone(Product.find(product_id))
+
+    def test_list_all_products(self):
+        """It should List all Products."""
+        ProductFactory.create_batch(3)
+        for product in ProductFactory.create_batch(3):
+            product.create()
+        self.assertGreaterEqual(len(Product.all()), 3)
+
+    def test_find_product_by_name(self):
+        """It should Find Products by name."""
+        product = ProductFactory(name="Unique Widget")
+        product.create()
+        results = Product.find_by_name("Unique Widget").all()
+        self.assertEqual(len(results), 1)
+        self.assertEqual(results[0].id, product.id)
+
+    def test_find_products_by_category(self):
+        """It should Find Products by category."""
+        product = ProductFactory(category=Category.TOOLS)
+        product.create()
+        results = Product.find_by_category(Category.TOOLS).all()
+        self.assertIn(product.id, [item.id for item in results])
+
+    def test_find_products_by_availability(self):
+        """It should Find Products by availability."""
+        product = ProductFactory(available=True)
+        product.create()
+        results = Product.find_by_availability(True).all()
+        self.assertIn(product.id, [item.id for item in results])
