@@ -30,7 +30,7 @@ from decimal import Decimal
 from unittest import TestCase
 from service import app
 from service.common import status
-from service.models import db, init_db, Product
+from service.models import db, init_db, Product, Category
 from tests.factories import ProductFactory
 
 # Disable all but critical errors during normal test run
@@ -240,17 +240,35 @@ class TestProductRoutes(TestCase):
         self.assertTrue(all(item["name"] == product.name for item in response.get_json()))
 
     def test_list_products_by_category(self):
-        """It should List Products by category."""
-        product = self._create_products(1)[0]
-        response = self.client.get(BASE_URL, query_string={"category": product.category.name})
+        """It should List Products by category with an exact result count."""
+        for category in [Category.TOOLS] * 3 + [Category.CLOTHS] * 2:
+            product = ProductFactory(category=category)
+            response = self.client.post(BASE_URL, json=product.serialize())
+            self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+
+        response = self.client.get(
+            BASE_URL,
+            query_string={"category": Category.TOOLS.name}
+        )
         self.assertEqual(response.status_code, status.HTTP_200_OK)
-        self.assertTrue(all(item["category"] == product.category.name for item in response.get_json()))
+
+        data = response.get_json()
+        self.assertEqual(len(data), 3)
+        self.assertTrue(all(item["category"] == Category.TOOLS.name for item in data))
 
     def test_list_products_by_availability(self):
-        """It should List Products by availability."""
-        product = ProductFactory(available=True)
-        response = self.client.post(BASE_URL, json=product.serialize())
-        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
-        response = self.client.get(BASE_URL, query_string={"available": "true"})
+        """It should List Products by availability with an exact result count."""
+        for available in [True, True, True, False, False]:
+            product = ProductFactory(available=available)
+            response = self.client.post(BASE_URL, json=product.serialize())
+            self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+
+        response = self.client.get(
+            BASE_URL,
+            query_string={"available": "true"}
+        )
         self.assertEqual(response.status_code, status.HTTP_200_OK)
-        self.assertTrue(all(item["available"] is True for item in response.get_json()))
+
+        data = response.get_json()
+        self.assertEqual(len(data), 3)
+        self.assertTrue(all(item["available"] is True for item in data))
