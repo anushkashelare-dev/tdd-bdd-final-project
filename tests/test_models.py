@@ -132,7 +132,6 @@ class TestProductModel(unittest.TestCase):
 
     def test_list_all_products(self):
         """It should List all Products."""
-        ProductFactory.create_batch(3)
         for product in ProductFactory.create_batch(3):
             product.create()
         self.assertGreaterEqual(len(Product.all()), 3)
