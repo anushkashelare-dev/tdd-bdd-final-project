@@ -132,3 +132,21 @@ def step_impl(context, element_name, text_string):
     )
     element.clear()
     element.send_keys(text_string)
+
+@when('I press the "{button_name}" button')
+def step_impl(context, button_name):
+    """Click a form button by its conventional id."""
+    button_id = button_name.lower().replace(" ", "-") + "-btn"
+    button = WebDriverWait(context.driver, context.wait_seconds).until(
+        expected_conditions.element_to_be_clickable((By.ID, button_id))
+    )
+    button.click()
+
+
+@then('I should see the message "{message}"')
+def step_impl(context, message):
+    """Verify the status message displayed by the application."""
+    element = WebDriverWait(context.driver, context.wait_seconds).until(
+        expected_conditions.visibility_of_element_located((By.ID, "flash_message"))
+    )
+    assert message in element.text
